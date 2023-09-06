@@ -1,4 +1,4 @@
 Designe Paterns::implement singleton::Wed Sep 6 2023::0
 Algorithms::implement merge sort and quick sort::Tue Sep 5 2023::0
-Math::do ex. 250->300::Tue Sep 5 2023::0
+Math::do ex. 250->300::Tue Sep 5 2023::1
 Physics::study Newton's 3rd law::Tue Sep 5 2023::0

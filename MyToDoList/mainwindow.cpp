@@ -13,6 +13,7 @@
 #include <QCalendarWidget>
 #include <QDialog>
 #include <QHeaderView>
+#include <QCoreApplication>
 #include "donebox.h"
 
 
@@ -53,6 +54,9 @@ void MainWindow::creatTable()
 
 void MainWindow::createToolbar()
 {
+    QString projectPath = QCoreApplication::applicationDirPath();
+    projectPath = projectPath.remove(projectPath.split('/').last());
+
     //creat actions
     QAction* _add = new QAction(QString("Add"), this);
     QAction* _edit = new QAction(QString("Edit"), this);
@@ -61,24 +65,27 @@ void MainWindow::createToolbar()
     QAction* _sortByDate = new QAction(QString("Sort By Date"), this);
     QAction* _sortByName = new QAction(QString("Sort By Name"), this);
     QAction* _sortByDescription = new QAction(QString("Sort By Description"), this);
+    QAction* _filter = new QAction(QString("Filter"), this);
 
 
     //set icons for Actions
-    QIcon addIcon("C:/Users/home_/Desktop/Edgar/To Do List/MyToDoList/Icons/ADD");
+    QIcon addIcon(projectPath + "/MyToDoList/Icons/ADD");
     _add->setIcon(addIcon);
-    QIcon editIcon("C:/Users/home_/Desktop/Edgar/To Do List/MyToDoList/Icons/EDIT");
+    QIcon editIcon(projectPath + "/MyToDoList/Icons/EDIT");
     _edit->setIcon(editIcon);
-    QIcon deleteIcon("C:/Users/home_/Desktop/Edgar/To Do List/MyToDoList/Icons/DELETE");
+    QIcon deleteIcon(projectPath + "/MyToDoList/Icons/DELETE");
     _delete->setIcon(deleteIcon);
-    QIcon saveIcon("C:/Users/home_/Desktop/Edgar/To Do List/MyToDoList/Icons/SAVE");
+    QIcon saveIcon(projectPath + "/MyToDoList/Icons/SAVE");
     _save->setIcon(saveIcon);
     //sort buttons
-    QIcon _sortByNameIcon("C:/Users/home_/Desktop/Edgar/To Do List/MyToDoList/Icons/SORTNAME");
+    QIcon _sortByNameIcon(projectPath + "/MyToDoList/Icons/SORTNAME");
     _sortByName->setIcon(_sortByNameIcon);
-    QIcon _sortByDescriptionIcon("C:/Users/home_/Desktop/Edgar/To Do List/MyToDoList/Icons/SORTDESCRIPTION");
+    QIcon _sortByDescriptionIcon(projectPath + "/MyToDoList/Icons/SORTDESCRIPTION");
     _sortByDescription->setIcon(_sortByDescriptionIcon);
-    QIcon _sortByDateIcon("C:/Users/home_/Desktop/Edgar/To Do List/MyToDoList/Icons/SORTDATE");
+    QIcon _sortByDateIcon(projectPath + "/MyToDoList/Icons/SORTDATE");
     _sortByDate->setIcon(_sortByDateIcon);
+    QIcon filterIcon(projectPath + "/MyToDoList/Icons/Filter");
+    _filter->setIcon(filterIcon);
 
     //add buttons to tool bar
     m_toolBar = new QToolBar(this);
@@ -90,6 +97,8 @@ void MainWindow::createToolbar()
     m_toolBar->addAction(_sortByName);
     m_toolBar->addAction(_sortByDescription);
     m_toolBar->addAction(_sortByDate);
+    m_toolBar->addAction(_filter);
+
     this->addToolBar(m_toolBar);
 
 
@@ -101,6 +110,7 @@ void MainWindow::createToolbar()
     QObject::connect(_sortByDate, &QAction::triggered, this, &MainWindow::sortByDate);
     QObject::connect(_sortByName, &QAction::triggered, this, &MainWindow::sortByName);
     QObject::connect(_sortByDescription, &QAction::triggered, this, &MainWindow::sortByDescription);
+    QObject::connect(_filter, &QAction::triggered, this, &MainWindow::filterByState);
 
 }
 
@@ -121,7 +131,10 @@ void MainWindow::changeCoulumState(const int col)
 void MainWindow::loadData()
 {
     //reade file
-    QFile file("C:/Users/home_/Desktop/Edgar/To Do List/MyToDoList/Resource/table_data.txt");
+    QString projectPath = QCoreApplication::applicationDirPath();
+    projectPath = projectPath.remove(projectPath.split('/').last());
+    QString path = projectPath + "/MyToDoList/Resource/table_data.txt";
+    QFile file(projectPath + "/MyToDoList/Resource/table_data.txt");
 
         if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QTextStream in(&file);
@@ -248,7 +261,8 @@ void MainWindow::editNode()
 
 void MainWindow::save()
 {
-    QFile file("C:/Users/home_/Desktop/Edgar/To Do List/MyToDoList/Resource/table_data.txt");
+    QString projectPath = QCoreApplication::applicationDirPath();
+    QFile file(projectPath + "/Resource/table_data.txt");
 
         if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
             QTextStream out(&file);
@@ -270,6 +284,18 @@ void MainWindow::save()
         } else {
             qDebug() << "Can not open file!!";
         }
+}
+
+void MainWindow::filterByState()
+{
+    static bool filterFlag = false;
+
+    for(int i = 0; i < tableWidget->rowCount(); ++i){
+        if(reinterpret_cast<StatusBox*>(tableWidget->item(i, 3))->getCheckBox()->isChecked()){
+            tableWidget->setRowHidden(i, filterFlag);
+        }
+    }
+    filterFlag = !filterFlag;
 }
 
 MainWindow::~MainWindow()

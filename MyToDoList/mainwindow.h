@@ -34,6 +34,7 @@ public slots:
     void sortByDescription();
     void editNode();
     void save();
+    void filterByState();
 
 private:
     Ui::MainWindow *ui;
