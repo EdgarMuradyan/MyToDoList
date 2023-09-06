@@ -12,6 +12,7 @@
 #include <QString>
 #include <QCalendarWidget>
 #include <QDialog>
+#include <QHeaderView>
 #include "donebox.h"
 
 
@@ -19,36 +20,31 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
-    //ui->setupUi(this);
     m_widget = new QWidget(this);
     m_vlayout = new QVBoxLayout(this);
-    //m_toolBar = new QToolBar(this);
 
     setCentralWidget(m_widget);
 
     m_widget->setLayout(m_vlayout);
     buildCentralWidget();
-
 }
 
 void MainWindow::buildCentralWidget()
 {
     creatTable();
     createToolbar();
-
 }
 
 void MainWindow::creatTable()
-{    
+{
     tableWidget = new QTableWidget(0, 4, this);
     QStringList headerLabels;
     headerLabels << "Name" << "Description" << "Date of events" << "Status";
     tableWidget->setHorizontalHeaderLabels(headerLabels);
-    tableWidget->setColumnWidth(0, 60); // Column 0 width is set to 60 pixels
+    tableWidget->setColumnWidth(0, 100); // Column 0 width is set to 60 pixels
     tableWidget->setColumnWidth(1, 300); // Column 1 width is set to 300 pixels
     tableWidget->setColumnWidth(2, 100); // Column 2 width is set to 100 pixels
-    tableWidget->setColumnWidth(3, 40); // Column 3 width is set to 40 pixels
-
+    tableWidget->setColumnWidth(3, 45); // Column 3 width is set to 40 pixels
 
     m_vlayout->addWidget(tableWidget);
     loadData();
@@ -58,11 +54,14 @@ void MainWindow::creatTable()
 void MainWindow::createToolbar()
 {
     //creat actions
-    QAction* _add = new QAction(QString("Line"), this);
-    QAction* _edit = new QAction(QString("Rectangle"), this);
-    QAction* _delete = new QAction(QString("Clear"), this);
+    QAction* _add = new QAction(QString("Add"), this);
+    QAction* _edit = new QAction(QString("Edit"), this);
+    QAction* _delete = new QAction(QString("Delete"), this);
     QAction* _save = new QAction(QString("Save"), this);
-    QAction* _sort = new QAction(QString("Save"), this);
+    QAction* _sortByDate = new QAction(QString("Sort By Date"), this);
+    QAction* _sortByName = new QAction(QString("Sort By Name"), this);
+    QAction* _sortByDescription = new QAction(QString("Sort By Description"), this);
+
 
     //set icons for Actions
     QIcon addIcon("C:/Users/home_/Desktop/Edgar/To Do List/MyToDoList/Icons/ADD");
@@ -73,36 +72,55 @@ void MainWindow::createToolbar()
     _delete->setIcon(deleteIcon);
     QIcon saveIcon("C:/Users/home_/Desktop/Edgar/To Do List/MyToDoList/Icons/SAVE");
     _save->setIcon(saveIcon);
-    QIcon sortIcon("C:/Users/home_/Desktop/Edgar/To Do List/MyToDoList/Icons/SORT");
-    _sort->setIcon(sortIcon);
+    //sort buttons
+    QIcon _sortByNameIcon("C:/Users/home_/Desktop/Edgar/To Do List/MyToDoList/Icons/SORTNAME");
+    _sortByName->setIcon(_sortByNameIcon);
+    QIcon _sortByDescriptionIcon("C:/Users/home_/Desktop/Edgar/To Do List/MyToDoList/Icons/SORTDESCRIPTION");
+    _sortByDescription->setIcon(_sortByDescriptionIcon);
+    QIcon _sortByDateIcon("C:/Users/home_/Desktop/Edgar/To Do List/MyToDoList/Icons/SORTDATE");
+    _sortByDate->setIcon(_sortByDateIcon);
 
+    //add buttons to tool bar
     m_toolBar = new QToolBar(this);
     m_toolBar->addAction(_add);
     m_toolBar->addAction(_edit);
     m_toolBar->addAction(_delete);
     m_toolBar->addAction(_save);
-    m_toolBar->addAction(_sort);
+    m_toolBar->addSeparator();
+    m_toolBar->addAction(_sortByName);
+    m_toolBar->addAction(_sortByDescription);
+    m_toolBar->addAction(_sortByDate);
     this->addToolBar(m_toolBar);
+
 
     //connections tool bar
     QObject::connect(_add, &QAction::triggered, this, &MainWindow::addNewNode);
-    QObject::connect(_edit, &QAction::triggered, this, &MainWindow::changeTableState);
+    QObject::connect(_edit, &QAction::triggered, this, &MainWindow::editNode);
     QObject::connect(_delete, &QAction::triggered, this, &MainWindow::deleteNode);
     QObject::connect(_save, &QAction::triggered, this, &MainWindow::save);
-    QObject::connect(_sort, &QAction::triggered, this, &MainWindow::sortTable);
+    QObject::connect(_sortByDate, &QAction::triggered, this, &MainWindow::sortByDate);
+    QObject::connect(_sortByName, &QAction::triggered, this, &MainWindow::sortByName);
+    QObject::connect(_sortByDescription, &QAction::triggered, this, &MainWindow::sortByDescription);
+
 }
 
-void MainWindow::changeTableState()
+void MainWindow::changeCoulumState(const int col)
 {
-    int rowCount = tableWidget->rowCount();   
-    for (int row = 0; row < rowCount; ++row) {
-        tableWidget->item(row, 2)->setFlags(tableWidget->item(row, 2)->flags() & ~Qt::ItemIsEditable);
+    const int rowCount = tableWidget->rowCount();
+    if(m_editFlag){
+        for (int row = 0; row < rowCount; ++row) {
+            tableWidget->item(row, col)->setFlags(tableWidget->item(row, col)->flags() & ~Qt::ItemIsEditable);
+        }
+    } else {
+        for (int row = 0; row < rowCount; ++row) {
+            tableWidget->item(row, col)->setFlags(tableWidget->item(row, col)->flags() | Qt::ItemIsEditable);
+        }
     }
-
 }
 
 void MainWindow::loadData()
 {
+    //reade file
     QFile file("C:/Users/home_/Desktop/Edgar/To Do List/MyToDoList/Resource/table_data.txt");
 
         if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -123,7 +141,7 @@ void MainWindow::loadData()
 
             file.close();
         } else {
-            // Handle file open error here
+            qDebug() << "Can not open file!!";
         }
 }
 
@@ -135,7 +153,7 @@ void MainWindow::addDataToNode(QString _name, QString _description, QString _dat
     QTableWidgetItem *itemDescription = new QTableWidgetItem(_description);
     QTableWidgetItem *itemDate = new QTableWidgetItem(_date);
     itemDate->setFlags(itemDate->flags() & ~Qt::ItemIsEditable);
-    DoneBox *itemState = new DoneBox();
+    StatusBox *itemState = new StatusBox();
 
     tableWidget->setItem(rowCount, 0, itemName);//name
     tableWidget->setItem(rowCount, 1, itemDescription);//description
@@ -151,25 +169,36 @@ void MainWindow::addDataToNode(QString _name, QString _description, QString _dat
 
 void MainWindow::addNewNode(){
 
+
     int rowCount = tableWidget->rowCount();
     tableWidget->insertRow(rowCount);
+    //creat items for new node
     QTableWidgetItem *itemName = new QTableWidgetItem("name");
     QTableWidgetItem *itemDescription = new QTableWidgetItem("description");
     QDate date = QDate::currentDate();//get current date
     QTableWidgetItem *itemDate = new QTableWidgetItem(date.toString());
-    itemDate->setFlags(itemDate->flags() & ~Qt::ItemIsEditable);
-    DoneBox *itemState = new DoneBox();
+    StatusBox *itemState = new StatusBox();
 
+    //add items in Table Widget
     tableWidget->setItem(rowCount, 0, itemName);//name
     tableWidget->setItem(rowCount, 1, itemDescription);//description
     tableWidget->setItem(rowCount, 2, itemDate);//date
     tableWidget->setItem(rowCount, 3, itemState);//State
 
     tableWidget->setCellWidget(rowCount, 3, itemState->getCheckBox());
+
+    // If edit not allowed then new row will be not editable as well
+    if(!m_editFlag) {
+        for (int col = 0; col < tableWidget->columnCount(); ++col) {
+            tableWidget->item(rowCount, col)->setFlags(tableWidget->item(rowCount, col)->flags() & ~Qt::ItemIsEditable);
+
+        }
+    }
 }
 
 void MainWindow::deleteNode()
 {
+    //delete current selected node
     int currentRow = tableWidget->currentRow();
     if(currentRow >=0){
         tableWidget->removeRow(currentRow);
@@ -177,28 +206,44 @@ void MainWindow::deleteNode()
     }
 }
 
-void MainWindow::sortTable(){
+void MainWindow::sortByDate(){
     static bool sortFlag = true;
     if(sortFlag){
         tableWidget->sortItems(2, Qt::AscendingOrder);
-        sortFlag = false;
     } else {
         tableWidget->sortItems(2, Qt::DescendingOrder);
-        sortFlag = true;
     }
+    sortFlag = !sortFlag;
+}
 
+void MainWindow::sortByName(){
+    static bool sortFlag = true;
+    if(sortFlag){
+        tableWidget->sortItems(0, Qt::AscendingOrder);
+    } else {
+        tableWidget->sortItems(0, Qt::DescendingOrder);
+    }
+    sortFlag = !sortFlag;
+}
 
-
+void MainWindow::sortByDescription(){
+    static bool sortFlag = true;
+    if(sortFlag){
+        tableWidget->sortItems(1, Qt::AscendingOrder);
+    } else {
+        tableWidget->sortItems(1, Qt::DescendingOrder);
+    }
+    sortFlag = !sortFlag;
 }
 
 
 
 void MainWindow::editNode()
 {
-    int currentRow = tableWidget->currentRow();
-
-
-
+    for (int col = 0; col < tableWidget->columnCount(); ++col){
+        changeCoulumState(col);
+    }
+    m_editFlag = !m_editFlag;
 }
 
 void MainWindow::save()
@@ -218,12 +263,12 @@ void MainWindow::save()
                 out << separator;
                 out << tableWidget->item(row, 2)->text();//write Date
                 out << separator;
-                out << reinterpret_cast<DoneBox*>(tableWidget->item(row, 3))->getCheckBox()->isChecked();//write State
+                out << reinterpret_cast<StatusBox*>(tableWidget->item(row, 3))->getCheckBox()->isChecked();//write State
                 out << "\n"; // End of row
             }
             file.close();
         } else {
-            // Handle file open error here
+            qDebug() << "Can not open file!!";
         }
 }
 
@@ -231,5 +276,9 @@ MainWindow::~MainWindow()
 {
     delete ui;
     delete m_widget;
+    delete m_vlayout;
+    delete tableWidget;
+    delete m_toolBar;
+
 }
 

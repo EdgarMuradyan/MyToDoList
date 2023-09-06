@@ -19,19 +19,21 @@ public:
     MainWindow(QWidget *parent = nullptr);
     void buildCentralWidget();
     void creatTable();
-    void createToolbar();    
+    void createToolbar();
     void loadData();
     void addDataToNode(QString, QString, QString, bool);
+    void changeCoulumState(const int col);
 
 
     ~MainWindow();
 public slots:
     void addNewNode();
     void deleteNode();
-    void sortTable();
+    void sortByDate();
+    void sortByName();
+    void sortByDescription();
     void editNode();
     void save();
-    void changeTableState();
 
 private:
     Ui::MainWindow *ui;
@@ -39,9 +41,10 @@ private:
     QVBoxLayout *m_vlayout = nullptr;
     QTableWidget *tableWidget = nullptr;
     QToolBar* m_toolBar = nullptr;
-    QAction* m_AddAction = nullptr;
-    QAction* m_ClearAction = nullptr;
-    QAction* m_ExitAction = nullptr;
+
+
+
+    bool m_editFlag = true;
 
 };
 #endif // MAINWINDOW_H

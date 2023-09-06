@@ -3,19 +3,18 @@
 #include <QTableWidgetItem>
 #include <QCheckBox>
 
-class DoneBox : public QTableWidgetItem
+
+
+class StatusBox : public QTableWidgetItem
 {
-
 public:
-    DoneBox();
 
+    StatusBox();
     QCheckBox* getCheckBox();
-
+    ~StatusBox();
 
 private:
     QCheckBox *checkBox = nullptr;
-
-
 };
 
 #endif // DONEBOX_H

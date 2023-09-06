@@ -2,7 +2,7 @@
 #include <QCheckBox>
 #include <QVBoxLayout>
 
-DoneBox::DoneBox() : QTableWidgetItem()
+StatusBox::StatusBox() : QTableWidgetItem()
 {
    checkBox = new QCheckBox();
    //QVBoxLayout *layout = new QVBoxLayout();
@@ -11,6 +11,11 @@ DoneBox::DoneBox() : QTableWidgetItem()
    //checkBox->setAl
 }
 
-QCheckBox *DoneBox::getCheckBox(){
+QCheckBox *StatusBox::getCheckBox(){
     return this->checkBox;
+}
+
+StatusBox::~StatusBox()
+{
+    delete checkBox;
 }
