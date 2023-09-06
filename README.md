@@ -7,8 +7,6 @@ A simple To-Do List program created using Qt Creator in C++.
 - [Introduction](#introduction)
 - [Features](#features)
 - [Installation](#installation)
-- [Usage](#usage)
-
 
 
 ## Introduction
