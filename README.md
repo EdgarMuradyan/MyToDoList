@@ -34,9 +34,8 @@ Follow these instructions to get the To-Do List program up and running on your s
 
 Before you begin, ensure you have the following installed:
 
-- Qt Creator (version X.X.X or higher)
+- Qt Creator (version 6.2.4 or higher)
 - C++ compiler (e.g., GCC)
-- [Other prerequisites, if any]
 
 ### Installation
 
