@@ -6,12 +6,10 @@ A simple To-Do List program created using Qt Creator in C++.
 
 - [Introduction](#introduction)
 - [Features](#features)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
+- [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](#contributing)
-- [License](#license)
+
+
 
 ## Introduction
 
@@ -25,10 +23,6 @@ This To-Do List program is a basic task management application built with Qt Cre
 - Delete tasks.
 - Sort tasks by name, description and date.
 - Save tasks to a local file for later retrieval.
-
-## Getting Started
-
-Follow these instructions to get the To-Do List program up and running on your system.
 
 ### Prerequisites
 
