@@ -23,7 +23,7 @@ This To-Do List program is a basic task management application built with Qt Cre
 - Edit task details (e.g., title, description, due date).
 - Mark tasks as complete or incomplete.
 - Delete tasks.
-- Filter tasks based on their completion status.
+- Sort tasks by name, description and date.
 - Save tasks to a local file for later retrieval.
 
 ## Getting Started
