@@ -277,7 +277,7 @@ void MainWindow::save()
                 out << separator;
                 out << tableWidget->item(row, 2)->text();//write Date
                 out << separator;
-                out << reinterpret_cast<StatusBox*>(tableWidget->item(row, 3))->getCheckBox()->isChecked();//write State
+                out << reinterpret_cast<StatusBox*>(tableWidget->item(row, 3))->getCheckBox()->isChecked();//write State  // I know that this is bad practice to use reinterpret_cast, but in this case I don't have other choice.
                 out << "\n"; // End of row
             }
             file.close();
